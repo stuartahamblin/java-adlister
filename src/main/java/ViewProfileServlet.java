@@ -9,11 +9,11 @@ import java.io.IOException;
 public class ViewProfileServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        if (request.getSession().getAttribute("username") == null){
-            response.sendRedirect("/login");
+        if (request.getSession().getAttribute("username") != null){
+            request.getRequestDispatcher("/WEB-INF/profile.jsp").forward(request, response);
 
         } else {
-            request.getRequestDispatcher("/WEB-INF/profile.jsp").forward(request, response);
+            response.sendRedirect("/login");
         }
     }
 }
