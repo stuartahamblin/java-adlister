@@ -33,8 +33,13 @@ public class MySQLAdsDao implements Ads{
             Statement stmt = this.conn.createStatement();
             ResultSet rs = stmt.executeQuery(showAllQuery);
             while (rs.next()) {
-                Ad buildAd = new Ad(rs.getLong("id"), rs.getLong("user_id"), rs.getString("title"), rs.getString("description"));
-                output.add(buildAd);
+                output.add(new Ad(
+                        rs.getLong("id"),
+                        rs.getLong("user_id"),
+                        rs.getString("title"),
+                        rs.getString("description")
+                        )
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -52,8 +57,8 @@ public class MySQLAdsDao implements Ads{
                     ad.getDescription());
         long lastInsertId = 0;
         try {
-            Statement stmt = connection.createStatement();
-            stmt.executeUpdate(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            Statement stmt = conn.createStatement();
+            stmt.executeUpdate(insertQuery);
             ResultSet keysResultSet = stmt.getGeneratedKeys();
             long lastInsertedId = keysResultSet.getLong(1);
                 System.out.println(lastInsertedId);
