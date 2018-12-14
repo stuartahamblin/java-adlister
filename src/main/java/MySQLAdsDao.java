@@ -12,7 +12,6 @@ public class MySQLAdsDao implements Ads{
     private Connection conn;
 
     public MySQLAdsDao(Config config) {
-        Connection conn;
         try {
             DriverManager.registerDriver(new Driver());
             conn = DriverManager.getConnection(
@@ -30,11 +29,10 @@ public class MySQLAdsDao implements Ads{
         List<Ad> output = new ArrayList<>();
         String showAllQuery = "SELECT * FROM ADS";
         try {
-            Statement stmt = this.conn.createStatement();
+            Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(showAllQuery);
             while (rs.next()) {
                 Ad buildAd = new Ad(
-                        rs.getLong("id"),
                         rs.getLong("user_id"),
                         rs.getString("title"),
                         rs.getString("description")
@@ -49,16 +47,15 @@ public class MySQLAdsDao implements Ads{
 
     @Override
     public Long insert(Ad ad){
-        String insertQuery = String.format(
-                "INSERT INTO ads (id, user_id, title, description) VALUES (%d, %d, '%s', '%s')",
-                    ad.getId(),
-                    ad.getUserId(),
-                    ad.getTitle(),
-                    ad.getDescription());
         long lastInsertId = 0;
         try {
-            Statement stmt = conn.createStatement();
-            stmt.executeUpdate(insertQuery);
+            String insertQuery = "INSERT INTO ads (id, user_id, title, description) VALUES (?, ?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            stmt.setLong(1, ad.getId());
+            stmt.setLong(2, ad.getUserId());
+            stmt.setString(3, ad.getTitle());
+            stmt.setString(4, ad.getDescription());
+            stmt.executeUpdate();
             ResultSet keysResultSet = stmt.getGeneratedKeys();
             long lastInsertedId = keysResultSet.getLong(1);
                 System.out.println(lastInsertedId);
